@@ -598,6 +598,7 @@ let ImageFile = function(){
             if (ext === "gif") detectType = true;
             if (ext === "png") detectType = true;
             if (ext === "psd") detectType = true;
+            if (ext === "pcx") detectType = true;
             if (ext === "json") isText = true;
 
             var reader = new FileReader();

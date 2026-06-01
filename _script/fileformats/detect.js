@@ -6,6 +6,7 @@ import PNG from "./png.js";
 import PSD from "./psd.js";
 import Aseprite from "./aseprite.js";
 import DEGAS from "./degas.js";
+import PCX from "./pcx.js";
 
 let FileDetector = (function () {
     let me = {};
@@ -126,6 +127,23 @@ let FileDetector = (function () {
                         next(false);
                     }
                 }else{
+                    next(false);
+                }
+            } else if (ext === "pcx") {
+                file = BinaryStream(data.slice(0, data.byteLength), false);
+                file.goto(0);
+                if (PCX.detect(file)) {
+                    let parsed = PCX.parse(file);
+                    if (parsed && parsed.image) {
+                        next({
+                            image: parsed.image,
+                            type: "PCX",
+                            data: parsed,
+                        });
+                    } else {
+                        next(false);
+                    }
+                } else {
                     next(false);
                 }
             } else {
