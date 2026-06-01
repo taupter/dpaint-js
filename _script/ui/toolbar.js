@@ -20,7 +20,7 @@ let Toolbar = function(){
         {name: "select",command: COMMAND.SELECT, isTool: true, handleDeActivate: true, info: "<b>S</b> Make rectangular selection."},
         //{name: "layerselect",command: COMMAND.SELECTLAYER, isTool: true, info: "Select the top-most visible layer under the cursor and start free transform."},
         {name: "polygonselect",command: COMMAND.POLYGONSELECT, isTool: true, handleDeActivate: true, info: "<b>P</b> Make polygon selection."},
-        {name: "floodselect", isTool: true, command: COMMAND.FLOODSELECT, info: "<b>W</b> Make selection of on area of the same color."},
+        {name: "floodselect", isTool: true, command: COMMAND.FLOODSELECT, info: "<b>W</b> Make selection of an area of the same color."},
         {name: "circle",label: "", isTool: true, canFill: true, command: COMMAND.CIRCLE, info: "<b>C</b> Draw ellipsis. Shift to lock to circle, select again to toggle fill."},
         {name: "square",label: "", isTool: true, canFill: true, command: COMMAND.SQUARE, info: "<b>R</b> Draw rectangle. Shift to lock to square, select again to toggle fill."},
         {name: "line",label: "", isTool: true, command: COMMAND.LINE, info: "<b>L</b> Draw straight line."},

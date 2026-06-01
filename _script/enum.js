@@ -123,6 +123,7 @@ export const COMMAND = {
     PALETTEMODE_EHB: 1122,
     SELECTLAYER: 1123,
     TOGGLERULERS: 1124,
+    TOGGLEBOTTOMPANEL: 1125,
 };
 
 export let EVENT = {
@@ -181,4 +182,5 @@ export const SETTING = {
     recordingMode: "stroke",
     useMultiPalettes: false,
     penOnlyAllowColorPicker: true,
+    useBottomPanel: false
 }

@@ -19,18 +19,6 @@ let FramesPanel = function(){
 
     me.generate = (parent)=>{
         panelTools = $(".paneltools",{parent:parent},
-            $(".frameselectinline",
-                frameRange = $("input.framerange.hidden",{type:"range",max:1,min:0,value:0,oninput:()=>{
-                        ImageFile.activateFrame(parseInt(frameRange.value));
-                    }}),
-                frameInput = $("input",{type:"text",value:0})
-                ),
-            $(".button.delete",{
-                onClick:()=>{EventBus.trigger(COMMAND.DELETEFRAME)},
-                info: "Delete active frame"}),
-            $(".button.add",{
-                onClick:()=>{EventBus.trigger(COMMAND.ADDFRAME)},
-                info: "Add new frame"}),
             $(".framecontrols",
                 $(".button.play",{
                     onClick:(e)=>{
@@ -43,7 +31,19 @@ let FramesPanel = function(){
                     fpsRange = $("input",{type:"range",min:1,max:60,value:12}),
                     fpsInput = $("input",{type:"text",value:12})
                 )
-            )
+            ),
+            $(".frameselectinline",
+                frameRange = $("input.framerange.hidden",{type:"range",max:1,min:0,value:0,oninput:()=>{
+                        ImageFile.activateFrame(parseInt(frameRange.value));
+                    }}),
+                frameInput = $("input",{type:"text",value:0})
+                ),
+            $(".button.delete",{
+                onClick:()=>{EventBus.trigger(COMMAND.DELETEFRAME)},
+                info: "Delete active frame"}),
+            $(".button.add",{
+                onClick:()=>{EventBus.trigger(COMMAND.ADDFRAME)},
+                info: "Add new frame"})
          );
 
         contentPanel = $div("panelcontent","",parent);

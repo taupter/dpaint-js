@@ -8,6 +8,7 @@ let UserSettings = (()=>{
         result["touchRotate"] = true;
         result["useMultiPalettes"] = false;
         result["penOnlyAllowColorPicker"] = true;
+        result["recorderQuality"] = "standard";
         result["sidepanelWidth"] = 175;
         result["lastSaveFormat"] = "DPAINTJS";
         return result;

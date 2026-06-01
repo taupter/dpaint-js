@@ -1,5 +1,5 @@
 import {$div,$link} from "../util/dom.js";
-import {COMMAND, EVENT} from "../enum.js";
+import {COMMAND, EVENT, SETTING} from "../enum.js";
 import EventBus from "../util/eventbus.js";
 import UserSettings from "../userSettings.js";
 
@@ -125,6 +125,7 @@ let Menu = function(){
                 {label: "Rulers",command: COMMAND.TOGGLERULERS,shortKey: "meta+Shift+R",checked:false},
                 {label: "Split Screen",command: COMMAND.SPLITSCREEN,shortKey: "N", checked: false},
                 {label: "Tool Options",command: COMMAND.TOGGLESIDEPANEL, checked: false,ref:true},
+                SETTING.useBottomPanel ? {label: "Timeline",command: COMMAND.TOGGLEBOTTOMPANEL, checked: false,ref:true} : undefined,
                 {label: "Gallery",command: COMMAND.TOGGLEGALLERY, checked: false},
                 {label: "Presentation mode",command: COMMAND.PRESENTATION, checked: false},
                 {label: "Full Screen",command: COMMAND.FULLSCREEN,needsRealClick: true, checked: false},
@@ -188,6 +189,7 @@ let Menu = function(){
     }
 
     function buildMenuItem(item,parent){
+        if (!item) return;
         let menuItem = $link("handle",item.label,parent,(e) =>{
             if (item.command){
                 EventBus.trigger(item.command);

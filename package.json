@@ -8,7 +8,8 @@
     "scripts": {
         "clean": "rm -rf dist && rm -rf .parcel-cache",
         "cleanwin": "del /q .\\.parcel-cache\\* && del /q .\\dist\\*",
-        "build": "vite build --base=./",
+        "build": "vite build --base=./ --outDir dist_test",
+        "deploy": "vite build --base=./",
         "start": "npx http-server",
         "test": "playwright test --config ./tests/playwright.config.js"
     },

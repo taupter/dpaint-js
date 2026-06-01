@@ -9,7 +9,8 @@ import Contentpanel from "./contentpanel.js";
 import StatusBar from "./statusbar.js";
 import PaletteList from "./components/paletteList.js";
 import EventBus from "../util/eventbus.js";
-import {COMMAND, EVENT} from "../enum.js";
+import {COMMAND, EVENT, SETTING} from "../enum.js";
+import Bottompanel from "./bottompanel.js";
 
 let UI = function(){
 	let me = {}
@@ -24,6 +25,7 @@ let UI = function(){
 		Toolbar.init(container);
 		StatusBar.init(container);
 		Sidepanel.init(container);
+		if (SETTING.useBottomPanel) Bottompanel.init(container);
 		Contentpanel.init(container);
 		PaletteList.init(container);
 		Editor.init(container);

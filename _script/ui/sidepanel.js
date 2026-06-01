@@ -1,4 +1,4 @@
-import {COMMAND, EVENT} from "../enum.js";
+import {COMMAND, EVENT, SETTING} from "../enum.js";
 import $, {$div} from "../util/dom.js";
 import ImageProcessing from "../util/imageProcessing.js";
 import ImageFile from "../image.js";
@@ -33,13 +33,7 @@ var SidePanel = function(){
                 renderIconInfo(parent);
             }
         },
-        frames:{
-            label: "Frames",
-            height: 130,
-            content: parent=>{
-                FramesPanel.generate(parent);
-            }
-        },
+        framesPanel: false, // will be added later if not using bottom panel
         layers:{
             label: "Layers",
             height: 180,
@@ -76,6 +70,16 @@ var SidePanel = function(){
             height: 290,
             content: parent=>{
                 Palette.generateControlPanel(parent);
+            }
+        }
+    }
+
+    if (!SETTING.useBottomPanel){
+        panels.framesPanel ={
+            label: "Frames",
+                height: 130,
+                content: parent=>{
+                FramesPanel.generate(parent);
             }
         }
     }

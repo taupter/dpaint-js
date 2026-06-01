@@ -1825,6 +1825,391 @@ body.override .splitpanel .panel .toolbar .toolpanel .options .checkbox.pressure
   box-shadow: inset 0 0 0px 2px black;
 }
 
+.bottompanel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 19px;
+  height: 100px;
+  display: none;
+}
+.bottompanel.active {
+  display: block;
+  z-index: 10;
+}
+.bottompanel .panelcontainer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  overflow: auto;
+  border: 1px solid black;
+  background-color: #313335;
+}
+.bottompanel .panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+.bottompanel .panel .inner {
+  position: absolute;
+  top: 22px;
+  bottom: 0;
+  overflow: auto;
+  left: 0;
+  right: 0;
+}
+.bottompanel .panel .inner .frame {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #626262;
+  margin: 1px;
+  position: absolute;
+  opacity: 0.8;
+}
+.bottompanel .panel .inner .frame:hover {
+  border: 1px solid white;
+  cursor: pointer;
+  opacity: 1;
+}
+.bottompanel .panel .inner .frame .label {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #BBBBBB;
+  font-size: 12px;
+  padding: 4px;
+}
+.bottompanel .panel .inner .frame.active {
+  box-shadow: 0 0 3px 1px rgba(255, 255, 255, 0.8);
+  opacity: 1;
+}
+.bottompanel .panel .inner .frame.active .label {
+  color: #CCCCCC;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.bottompanel .panel .inner .frame.ghost {
+  opacity: 0.2;
+}
+.bottompanel .panel .inner.waiting {
+  opacity: 0.7;
+  pointer-events: none;
+  filter: brightness(0.5);
+  cursor: wait;
+}
+.bottompanel .panel h2 {
+  font-size: 14px;
+  color: #BBBBBB;
+  font-weight: 100;
+  padding: 2px;
+  margin: 0;
+}
+.bottompanel .panel.frames .paneltools .frameselectinline {
+  display: flex;
+  width: 100%;
+}
+.bottompanel .panel.frames .paneltools .frameselectinline input[type=text] {
+  padding: 0 4px;
+  width: 30px;
+  height: 19px;
+  margin-left: 4px;
+  margin-right: 2px;
+  font-size: 11px;
+}
+.bottompanel .panel.frames .paneltools .framerange {
+  margin-left: 4px;
+  display: none;
+}
+.bottompanel .panel.frames .paneltools .framecontrols {
+  display: none;
+}
+.bottompanel .panel.frames .paneltools .framecontrols .rangeselectinline {
+  display: flex;
+  margin-left: 4px;
+  align-items: center;
+  width: 100%;
+}
+.bottompanel .panel.frames .paneltools .framecontrols .rangeselectinline label {
+  opacity: 0.7;
+}
+.bottompanel .panel.frames .paneltools .framecontrols .rangeselectinline input[type=text] {
+  padding: 0 4px;
+  width: 30px;
+  height: 19px;
+  margin-left: 4px;
+  margin-right: 2px;
+  font-size: 11px;
+}
+.bottompanel .panel.frames .paneltools.multirow .framerange {
+  display: flex;
+}
+.bottompanel .panel.frames .paneltools.multirow .framecontrols {
+  display: flex;
+}
+.bottompanel .panel.frames .panelcontent {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 24px;
+  bottom: 0;
+  overflow: auto;
+  overflow-y: hidden;
+}
+.bottompanel .panel.frames .panelcontent.inactive {
+  pointer-events: none;
+}
+.bottompanel .panel .paneltools {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.7);
+  background-color: #2D2E30;
+  display: flex;
+  justify-content: flex-end;
+  font-size: 12px;
+  color: #BBBBBB;
+  position: relative;
+}
+.bottompanel .panel .paneltools .button {
+  height: 20px;
+  width: 20px;
+  margin-left: 2px;
+  font-size: 12px;
+  line-height: 20px;
+  border: none;
+  background-color: #282A2C;
+  background-image: url("../_img/add.svg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+.bottompanel .panel .paneltools .button.delete {
+  background-image: url("../_img/trashcan.svg");
+}
+.bottompanel .panel .paneltools .button.play {
+  background-image: url("../_img/play.svg");
+}
+.bottompanel .panel .paneltools .button.play.paused {
+  background-image: url("../_img/pause.svg");
+}
+.bottompanel .panel .paneltools .button:hover {
+  cursor: pointer;
+  opacity: 1;
+}
+.bottompanel .panel .paneltools .rangeselect {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  right: 44px;
+  font-size: 11px;
+  color: #9d9c9c;
+}
+.bottompanel .panel .paneltools .rangeselect input {
+  position: absolute;
+  margin: 0 0 0 4px;
+  height: 17px;
+  left: 40px;
+  top: 0;
+  right: 0;
+  width: auto;
+}
+.bottompanel .panel .paneltools .rangeselect input::-webkit-slider-thumb, .bottompanel .panel .paneltools .rangeselect input::-moz-range-thumb {
+  margin-top: -6px;
+  width: 8px;
+  height: 12px;
+  background: #9d9d9d;
+  border: 1px solid rgba(50, 50, 50, 0.7);
+}
+.bottompanel .panel .paneltools .rangeselect input::-moz-range-thumb {
+  width: 6px;
+  height: 10px;
+}
+.bottompanel .panel .paneltools .blendselect {
+  position: absolute;
+  left: 4px;
+  top: 25px;
+  right: 0;
+  color: #9d9c9c;
+}
+.bottompanel .panel .paneltools .blendselect .label {
+  line-height: 19px;
+}
+.bottompanel .panel .paneltools .blendselect select {
+  position: absolute;
+  right: 4px;
+  top: 0;
+  height: 19px;
+  left: 40px;
+  background-color: #181818;
+  color: #888888;
+  border: 1px solid #7b7b7b;
+}
+.bottompanel .panel .paneltools .blendselect select:focus {
+  outline: none;
+}
+.bottompanel .caption {
+  background-color: #282A2C;
+  color: #BBBBBB;
+  padding: 3px 5px 3px 16px;
+  font-size: 12px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  width: unset;
+  height: 21px;
+  border: none;
+  border-bottom: 1px solid black;
+  justify-content: flex-start;
+  user-select: none;
+}
+.bottompanel .caption i {
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  background-image: url("../_img/caret.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  transform: rotate(90deg);
+  transition: transform 0.2s ease-in-out;
+  opacity: 0.7;
+}
+.bottompanel .caption .close {
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  line-height: 20px;
+  right: 0;
+  top: 0;
+  text-align: center;
+  cursor: pointer;
+}
+.bottompanel .caption.noicon {
+  padding-left: 5px;
+}
+.bottompanel .subpanel {
+  color: #BBBBBB;
+  padding: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+.bottompanel .subpanel .label {
+  opacity: 0.7;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+.bottompanel .subpanel .value {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+}
+.bottompanel .subpanel .button.square {
+  width: 16px;
+  min-width: 16px;
+  height: 20px;
+  border: 1px solid black;
+  text-align: center;
+  line-height: 20px;
+  font-size: 12px;
+  border-right: none;
+  position: relative;
+}
+.bottompanel .subpanel .button.square:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("../_img/caret.svg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: 0.5;
+}
+.bottompanel .subpanel .button.square:hover {
+  cursor: pointer;
+}
+.bottompanel .subpanel .button.square:hover:after {
+  opacity: 1;
+}
+.bottompanel .subpanel .button.square.prev:after {
+  transform: rotate(180deg);
+}
+.bottompanel .subpanel select {
+  color: #BBBBBB;
+  width: 100%;
+  border: 1px solid black;
+  background-color: transparent;
+  margin: 4px 0;
+}
+.bottompanel .subpanel select:focus {
+  outline: none;
+}
+.bottompanel .subpanel.flex {
+  display: flex;
+  align-items: center;
+}
+.bottompanel .subpanel.flex .label {
+  margin-bottom: 0;
+  margin-right: 4px;
+  min-width: 55px;
+}
+.bottompanel .subpanel.flex select {
+  margin: 0;
+}
+.bottompanel .subpanel.flex .value {
+  position: relative;
+  margin-left: 4px;
+  right: unset;
+  top: unset;
+}
+.bottompanel .subpanel.flex.condensed {
+  padding: 0 4px;
+}
+.bottompanel .subpanel.flex.condensed .label {
+  min-width: 64px;
+}
+.bottompanel .subpanel.flex.condensed input[type=text] {
+  font-size: 12px;
+  border: 1px solid black;
+  background-color: #1c1c1c;
+  color: #8f8f8f;
+  padding: 2px 4px;
+}
+.bottompanel .subpanel.hidden {
+  display: none;
+}
+.bottompanel input[type=range] {
+  width: 100%;
+}
+.bottompanel .button.full {
+  color: #8f8f8f;
+  text-align: center;
+  border: 1px solid black;
+  line-height: 16px;
+  font-size: 12px;
+  margin: 4px;
+  background-color: #2D2E30;
+}
+.bottompanel .button.full:hover {
+  cursor: pointer;
+  color: #BBBBBB;
+  background-color: #282A2C;
+}
+.bottompanel textarea {
+  border: 1px solid black;
+  background-color: #1c1c1c;
+  color: #8f8f8f;
+  text-wrap: nowrap;
+  font-size: 11px;
+}
+
 /* override the default sidebar panel style */
 .contentpanel {
   position: absolute;
