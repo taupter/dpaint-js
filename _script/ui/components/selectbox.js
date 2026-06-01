@@ -262,6 +262,8 @@ let SelectBox = ((editor,resizer)=>{
 
 
     me.floodSelect = function(canvas,point,fillColor){
+        let isFloodFill = !!fillColor;
+        let useGlobalFloodSelect = !isFloodFill && ToolOptions.useFloodSelectGlobal();
         fillColor = fillColor||[0,0,0];
         let w = canvas.width;
         let h = canvas.height;
@@ -275,17 +277,24 @@ let SelectBox = ((editor,resizer)=>{
         let done = {};
         let check = [];
         let ind = getIndex(point);
-        put(ind);
         let color = getColor(ind);
 
-        while (check.length){
-            let i = check.shift();
-            let x = i%w;
-            let y = (i-x)/w;
-            if (x>0) checkIndex(i-1);
-            if (x<w-1) checkIndex(i+1);
-            if (y>0) checkIndex(i-w);
-            if (y<h-1) checkIndex(i+w);
+        if (useGlobalFloodSelect){
+            let max = w*h;
+            for (let i = 0;i<max;i++){
+                if (matchesColor(getColor(i),color)) put(i);
+            }
+        }else{
+            put(ind);
+            while (check.length){
+                let i = check.shift();
+                let x = i%w;
+                let y = (i-x)/w;
+                if (x>0) checkIndex(i-1);
+                if (x<w-1) checkIndex(i+1);
+                if (y>0) checkIndex(i-w);
+                if (y<h-1) checkIndex(i+w);
+            }
         }
 
         c.putImageData(target,0,0);
@@ -311,14 +320,17 @@ let SelectBox = ((editor,resizer)=>{
 
         function checkIndex(ind){
             if (!done[ind]){
-                let c = getColor(ind);
-                let passed = c === color;
-                if (!passed && tolerance){
-                    let distance = Color.distance(c,color);
-                    passed = distance <= tolerance*2;
-                }
-                if (passed) put(ind);
+                if (matchesColor(getColor(ind),color)) put(ind);
             }
+        }
+
+        function matchesColor(candidate,targetColor){
+            let passed = candidate === targetColor;
+            if (!passed && tolerance){
+                let distance = Color.distance(candidate,targetColor);
+                passed = distance <= tolerance*2;
+            }
+            return passed;
         }
 
         function put(ind){

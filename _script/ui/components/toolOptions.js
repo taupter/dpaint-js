@@ -14,6 +14,7 @@ let ToolOptions = function(){
     let fill = false;
     let lineSize = 1;
     let tolerance = 0;
+    let floodSelectGlobal = false;
     let strength = 50;
     let spread = 20;
     let mask = false;
@@ -39,6 +40,7 @@ let ToolOptions = function(){
     let fillCheckbox;
     let lineSizeRange;
     let toleranceRange;
+    let floodSelectGlobalCheckbox;
     let strengthRange;
     let spreadRange;
     let brushOptionGroup;
@@ -99,6 +101,10 @@ let ToolOptions = function(){
 
     me.getTolerance = ()=>{
         return tolerance;
+    }
+
+    me.useFloodSelectGlobal = ()=>{
+        return floodSelectGlobal;
     }
 
     me.getStrength = ()=>{
@@ -178,7 +184,10 @@ let ToolOptions = function(){
             case COMMAND.POLYGONSELECT:
             case COMMAND.FLOODSELECT:
                 options.appendChild(selectSetting());
-                if (command === COMMAND.FLOODSELECT) options.appendChild(toleranceSetting());
+                if (command === COMMAND.FLOODSELECT){
+                    options.appendChild(floodSelectGlobalSetting());
+                    options.appendChild(toleranceSetting());
+                }
                 break;
             case COMMAND.SELECTLAYER:
                 options.appendChild(label("Layer Select:"));
@@ -440,6 +449,15 @@ let ToolOptions = function(){
 
         }
         return toleranceRange;
+    }
+
+    function floodSelectGlobalSetting(){
+        if (!floodSelectGlobalCheckbox) floodSelectGlobalCheckbox = $checkbox("Global","","",(checked)=>{
+            floodSelectGlobal = checked;
+            EventBus.trigger(EVENT.toolOptionsChanged);
+        });
+        floodSelectGlobalCheckbox.setState(floodSelectGlobal);
+        return floodSelectGlobalCheckbox;
     }
 
     function smudgeLabel(){
