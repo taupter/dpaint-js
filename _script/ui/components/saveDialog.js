@@ -624,7 +624,7 @@ var SaveDialog = function(){
         let generator = fileType.generator;
         if (currentSaveOptions.depth === 8){
             if (generator === "PNG") generator = "PNG8";
-            if (generator === "DPAINT") generator = "INDEXED";
+            if (generator === "DPAINT") generator = "DPAINTINDEXED";
         }
         if (generator === "ICO") generator = currentSaveOptions.iconType;
 

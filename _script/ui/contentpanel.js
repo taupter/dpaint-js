@@ -86,7 +86,7 @@ var ContentPanel = function(){
                         $("option",{value:"best", selected: UserSettings.get("recorderQuality") === "best"},"Best (source size)")
                     )
                 ),
-                $(".hint","Higher quality keeps more detail on iPad, but export size and memory usage go up."),
+                $(".hint","Higher quality keeps more detail, but export size and memory usage go up."),
                 $("h4","Advanced"),
                 $checkbox("Use Multi Palettes",null,"",(checked)=>{UserSettings.set("useMultiPalettes",checked,true)},UserSettings.get("useMultiPalettes")),
                 $(".warning","Warning: Highly experimental, may cause data loss")

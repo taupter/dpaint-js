@@ -58,8 +58,11 @@ V 0.2.1
     - Added palm-rejection and option to disable touch-color-picker when pen-only mode is on.
     - Experimental Photoshop PSD import/export
     - Experimental .aseprite import (read only for now)
+    - PCX file format support
     - layer move axis lock
     - load palette from image
     - better handling/editing of Amiga Icons, including tooltypes, icon type and default tool
     - ruler tool
     - Add/Subtract from selection with shift and alt keys
+    - "global" flood select tool (selects all pixels of the same color in the entire image, with a similarity threshold)
+    - stray pixel removal tool

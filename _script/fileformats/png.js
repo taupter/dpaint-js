@@ -35,10 +35,33 @@ let IndexedPng = function(){
         let filterMethod = 0;
         let interlaceMethod = 0;
 
+        let paletteColors = Palette.get().slice();
+        let transparentIndex = -1;
+        let hasTransparency = false;
+        
+        let ctx = canvas.getContext("2d");
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let pixels = imageData.data;
+        for (let i = 3; i < pixels.length; i += 4) {
+            if (pixels[i] === 0) {
+                hasTransparency = true;
+                break;
+            }
+        }
+
+        if (hasTransparency) {
+            if (paletteColors.length < 256) {
+                transparentIndex = paletteColors.length;
+                paletteColors.push([0, 0, 0]);
+            } else {
+                transparentIndex = typeof Palette.getBackColorIndex === "function" ? Palette.getBackColorIndex() : 0;
+            }
+        }
+
         let header = getHeaderChunk(canvas.width, canvas.height, bitDepth, colorType, compressionMethod, filterMethod, interlaceMethod);
-        let palette = getPaletteChunk();
-        let transparency = getTransparencyChunk(canvas);
-        let data = getDataChunk(canvas);
+        let palette = getPaletteChunk(paletteColors);
+        let transparency = getTransparencyChunk(paletteColors, transparentIndex);
+        let data = getDataChunk(canvas, transparentIndex, imageData);
 
         let pngSize = pngHeader.length + chunkSize(header) + chunkSize(palette) + (transparency ? chunkSize(transparency) : 0) + chunkSize(data) + chunkSize([]);
         let arrayBuffer = new ArrayBuffer(pngSize);
@@ -109,50 +132,26 @@ let IndexedPng = function(){
         return {width, height, bitDepth, colorType, compressionMethod, filterMethod, interlaceMethod};
     }
 
-    function getPaletteChunk(){
-        let palette = Palette.get();
-        let data = new Uint8Array(palette.length*3);
-        for (let i = 0; i < palette.length; i++) data.set(palette[i], i*3);
+    function getPaletteChunk(paletteColors){
+        let data = new Uint8Array(paletteColors.length*3);
+        for (let i = 0; i < paletteColors.length; i++) data.set(paletteColors[i], i*3);
         return data;
     }
 
-    function getTransparencyChunk(canvas){
-        let w = canvas.width;
-        let h = canvas.height;
-        let imageData = canvas.getContext("2d").getImageData(0, 0, w, h);
-        let pixels = imageData.data;
+    function getTransparencyChunk(paletteColors, transparentIndex){
+        if (transparentIndex < 0) return null;
         
-        let transparentIndices = new Set();
-        
-        // Find all fully transparent pixels and their color indices
-        for (let y = 0; y < h; y++){
-            for (let x = 0; x < w; x++){
-                let i = (y * w + x) * 4;
-                let a = pixels[i + 3];
-                if (a === 0) { // fully transparent
-                    let r = pixels[i];
-                    let g = pixels[i + 1];
-                    let b = pixels[i + 2];
-                    let colorIndex = Palette.getColorIndex([r, g, b], true);
-                    transparentIndices.add(colorIndex);
-                }
-            }
-        }
-        
-        if (transparentIndices.size === 0) return null;
-        
-        let palette = Palette.get();
-        let data = new Uint8Array(palette.length);
+        let data = new Uint8Array(paletteColors.length);
         
         // Set alpha values: 0 for transparent colors, 255 for opaque
-        for (let i = 0; i < palette.length; i++){
-            data[i] = transparentIndices.has(i) ? 0 : 255;
+        for (let i = 0; i < paletteColors.length; i++){
+            data[i] = (i === transparentIndex) ? 0 : 255;
         }
         
         return data;
     }
 
-    function getDataChunk(canvas){
+    function getDataChunk(canvas, transparentIndex, imageData){
         let w = canvas.width;
         let h = canvas.height;
 
@@ -160,7 +159,6 @@ let IndexedPng = function(){
         // put scanline filter method in first byte of each scanline
         // zlib compress the whole thing
 
-        let imageData = canvas.getContext("2d").getImageData(0, 0, w, h);
         let pixels = imageData.data;
 
         let data = new Uint8Array(w * h + h);
@@ -169,10 +167,16 @@ let IndexedPng = function(){
             data[scanLineIndex] = 0; // no filter
             for (let x = 0; x < w; x++){
                 let i = (y * w + x) * 4;
-                let r = pixels[i];
-                let g = pixels[i + 1];
-                let b = pixels[i + 2];
-                let color = Palette.getColorIndex([r, g, b],true);
+                let a = pixels[i + 3];
+                let color;
+                if (a === 0 && transparentIndex >= 0) {
+                    color = transparentIndex;
+                } else {
+                    let r = pixels[i];
+                    let g = pixels[i + 1];
+                    let b = pixels[i + 2];
+                    color = Palette.getColorIndex([r, g, b],true);
+                }
                 data[scanLineIndex + x + 1] = color;
             }
         }
