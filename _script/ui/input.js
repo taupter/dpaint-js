@@ -302,7 +302,24 @@ var Input = function(){
 		if (Editor.getCurrentTool() !== COMMAND.TEXT){
 			if (Input.isMetaDown()){
 				if (code === "keyc" || code === "keyx" || code === "keyv"){
-					// allow default copy, cut, paste
+					// If an editable element (input/textarea/code) is focused, let the browser
+					// handle copy/cut/paste natively so normal text editing keeps working.
+					if (isEditableTarget(document.activeElement)) return;
+
+					// Otherwise route copy/paste through the async Clipboard API from THIS keydown
+					// gesture. We must not let the native "copy"/"paste" events fire: Safari throws
+					// NotAllowedError when navigator.clipboard.* is called inside those events.
+					if (code === "keyc"){
+						e.preventDefault();
+						EventBus.trigger(COMMAND.COPY);
+						return;
+					}
+					if (code === "keyv"){
+						e.preventDefault();
+						EventBus.trigger(COMMAND.PASTE);
+						return;
+					}
+					// cut (keyx): keep default browser behaviour
 					return;
 				}
 
@@ -483,7 +500,16 @@ var Input = function(){
 		return code.toLowerCase();
 	}
 
+	function isEditableTarget(el){
+		if (!el) return false;
+		const tag = el.tagName ? el.tagName.toLowerCase() : "";
+		return tag === "input" || tag === "textarea" || el.isContentEditable || !!(el.closest && el.closest("code"));
+	}
+
 	function handlePaste(e){
+
+		// Let editable elements handle paste natively (e.g. the filename field in dialogs).
+		if (e && isEditableTarget(e.target)) return;
 
 		function pasteImage(blob){
 			let img = new Image();
@@ -498,40 +524,26 @@ var Input = function(){
 		}
 
 		if (!e){
-			// "paste" selected from menu;
-
-			let blob;
-			const queryOpts = { name: 'clipboard-read', allowWithoutGesture: true };
-			navigator.permissions.query(queryOpts).then(permissionStatus=>{
-				// Will be 'granted', 'denied' or 'prompt':
-				console.log(permissionStatus.state);
-				getClipboardContents();
-
-				// Listen for changes to the permission state
-				permissionStatus.onchange = () => {
-					console.log(permissionStatus.state);
-					getClipboardContents();
-				};
-
-
-				async function getClipboardContents() {
-					if (permissionStatus.state === "granted") {
-						try {
-							const clipboardItems = await navigator.clipboard.read();
-							for (const clipboardItem of clipboardItems) {
-								for (const type of clipboardItem.types) {
-									if (!blob && type.indexOf('image') !== -1){
-										blob = await clipboardItem.getType(type);
-										pasteImage(blob);
-									}
-								}
+			// "paste" selected from menu or triggered via the Cmd/Ctrl+V keyboard gesture.
+			// Read the clipboard directly inside the gesture. We deliberately do NOT use
+			// navigator.permissions.query({name:'clipboard-read'}): Safari doesn't support that
+			// permission name and rejects with a TypeError (the "unhandled promise rejection").
+			if (navigator.clipboard && navigator.clipboard.read){
+				navigator.clipboard.read().then(async (clipboardItems)=>{
+					for (const clipboardItem of clipboardItems){
+						for (const type of clipboardItem.types){
+							if (type.indexOf("image") !== -1){
+								const blob = await clipboardItem.getType(type);
+								pasteImage(blob);
+								return;
 							}
-						} catch (err) {
-							console.error(err.name, err.message);
 						}
 					}
-				}
-			})
+				}).catch(err=>{
+					console.error(err.name, err.message);
+				});
+			}
+			return;
 		}
 		console.log("paste",e);
 		if (e && e.clipboardData){
@@ -571,21 +583,25 @@ var Input = function(){
 
 		let canvas = Selection.toCanvas() || ImageFile.getActiveContext().canvas;
 		if (canvas && ClipboardItem){
-			canvas.toBlob((blob) => {
-				// note: As to date, FireFox doesn't support ClipboardItem.
-				let data = [new ClipboardItem({ [blob.type]: blob })];
-
-				navigator.clipboard.write(data).then(
-					() => {
-						console.log("copied");
-					},
-					(err) => {
-						console.error("error");
-						console.error(err);
-						//onError(err);
-					}
-				);
-			});
+			// note: As to date, FireFox doesn't support ClipboardItem.
+			// Safari requires clipboard.write() to be called synchronously within the user gesture
+			// and does not support Promise values in ClipboardItem before Safari 16.4.
+			// Use toDataURL() to build the Blob synchronously so the entire write is in-gesture.
+			const dataUrl = canvas.toDataURL("image/png");
+			const binary = atob(dataUrl.split(",")[1]);
+			const bytes = new Uint8Array(binary.length);
+			for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+			const blob = new Blob([bytes], {type: "image/png"});
+			const data = [new ClipboardItem({"image/png": blob})];
+			navigator.clipboard.write(data).then(
+				() => {
+					console.log("copied");
+				},
+				(err) => {
+					console.error("error");
+					console.error(err);
+				}
+			);
 		}
 	}
 
