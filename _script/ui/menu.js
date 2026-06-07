@@ -71,6 +71,9 @@ let Menu = function(){
                 {label: "Add Mask",items:[
                         {label: "Show All",command: COMMAND.LAYERMASK, shortKey: "meta+Shift+A"},
                         {label: "Hide All",command: COMMAND.LAYERMASKHIDE, shortKey: "meta+Shift+H"},
+                    ]},
+                {label: "Action",items:[
+                        {label: "Remove stray pixels",command: COMMAND.REMOVESTRAYPIXELS}
                     ]}
             ]},
         {label: "Selection", items:[

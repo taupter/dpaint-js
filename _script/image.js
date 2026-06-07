@@ -378,6 +378,84 @@ let ImageFile = function(){
         }
     }
 
+    me.removeStrayPixels = function(index){
+        if (typeof index !== "number") index = activeLayerIndex;
+        let layer = currentFrame().layers[index];
+        if (layer) {
+            let canvas = layer.getCanvas();
+            let ctx = layer.getContext();
+            let w = canvas.width;
+            let h = canvas.height;
+            let imgData = ctx.getImageData(0, 0, w, h);
+            let data = imgData.data;
+
+            let visited = new Uint8Array(w * h);
+
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    let i = y * w + x;
+                    if (visited[i]) continue;
+
+                    if (data[i * 4 + 3] === 0) {
+                        visited[i] = 1;
+                        continue;
+                    }
+
+                    let q = [i];
+                    let cluster = [i];
+                    visited[i] = 1;
+
+                    let minX = x;
+                    let maxX = x;
+                    let minY = y;
+                    let maxY = y;
+
+                    let head = 0;
+                    while(head < q.length) {
+                        let curr = q[head++];
+                        let cx = curr % w;
+                        let cy = Math.floor(curr / w);
+
+                        if (cx < minX) minX = cx;
+                        if (cx > maxX) maxX = cx;
+                        if (cy < minY) minY = cy;
+                        if (cy > maxY) maxY = cy;
+
+                        for (let ny = cy - 1; ny <= cy + 1; ny++) {
+                            for (let nx = cx - 1; nx <= cx + 1; nx++) {
+                                if (nx === cx && ny === cy) continue;
+                                if (nx >= 0 && ny >= 0 && nx < w && ny < h) {
+                                    let ni = ny * w + nx;
+                                    if (!visited[ni] && data[ni * 4 + 3] > 0) {
+                                        visited[ni] = 1;
+                                        q.push(ni);
+                                        cluster.push(ni);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    let clusterWidth = maxX - minX + 1;
+                    let clusterHeight = maxY - minY + 1;
+
+                    if (clusterWidth < 12 && clusterHeight < 12) {
+                        for (let j = 0; j < cluster.length; j++) {
+                            let ci = cluster[j];
+                            data[ci * 4 + 0] = 0;
+                            data[ci * 4 + 1] = 0;
+                            data[ci * 4 + 2] = 0;
+                            data[ci * 4 + 3] = 0;
+                        }
+                    }
+                }
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+            EventBus.trigger(EVENT.layerContentChanged);
+        }
+    }
+
     me.setLayerOpacity = function(value){
         if (activeLayer) {
             activeLayer.opacity = value;
@@ -1420,6 +1498,13 @@ let ImageFile = function(){
         me.duplicateLayer();
         HistoryService.end();
     });
+
+    EventBus.on(COMMAND.REMOVESTRAYPIXELS, function(){
+        HistoryService.start(EVENT.layerContentHistory);
+        me.removeStrayPixels();
+        HistoryService.end();
+    });
+
 
     EventBus.on(COMMAND.FLIPHORIZONTAL, function(){
         HistoryService.start(EVENT.layerContentHistory);
