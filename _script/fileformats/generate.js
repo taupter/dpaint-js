@@ -7,6 +7,7 @@ import Palette from "../ui/palette.js";
 import IndexedPng from "./png.js";
 import GIF from "./gif.js";
 import PSD from "./psd.js";
+import PCX from "./pcx.js";
 
 function rleCompress(bytes) {
     var packed = [];
@@ -121,6 +122,8 @@ let Generate = function(){
                 return me.png8();
             case "GIF":
                 return me.gif();
+            case "PCX":
+                return me.pcx(options);
             case "DPAINT":
                 return me.dPaint();
             case "DPAINTINDEXED":
@@ -378,6 +381,29 @@ let Generate = function(){
             result: "ok",
             file: new Blob([buffer], {type: "application/octet-stream"})
         };
+    }
+
+    me.pcx=()=>{
+        let canvas = ImageFile.getCanvas();
+        let { bitsPerPixel, colorPlanes, palette } = me.pcxFormat(canvas);
+        let buffer = PCX.write(canvas, { bitsPerPixel, colorPlanes, palette });
+        return {
+            result: "ok",
+            file: new Blob([buffer], {type: "application/octet-stream"})
+        };
+    }
+
+    // Returns the best PCX format descriptor for a given canvas.
+    // Exported so the save dialog can display format info without writing.
+    me.pcxFormat = (canvas) => {
+        let colors = ImageProcessing.getColors(canvas, 256);
+        let n = colors.length;
+        if (n > 256) return { bitsPerPixel: 8, colorPlanes: 3, palette: null,   label: "24-bit RGB" };
+        if (n > 16)  return { bitsPerPixel: 8, colorPlanes: 1, palette: colors, label: "8-bit indexed, " + n + " colors" };
+        if (n > 8)   return { bitsPerPixel: 1, colorPlanes: 4, palette: colors, label: "4-bit planar, " + n + " colors" };
+        if (n > 4)   return { bitsPerPixel: 1, colorPlanes: 3, palette: colors, label: "3-bit planar, " + n + " colors" };
+        if (n > 2)   return { bitsPerPixel: 1, colorPlanes: 2, palette: colors, label: "2-bit planar, " + n + " colors" };
+        return         { bitsPerPixel: 1, colorPlanes: 1, palette: colors, label: "1-bit monochrome" };
     }
 
     me.psd=(options)=>{

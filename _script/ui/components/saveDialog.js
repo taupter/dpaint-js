@@ -100,6 +100,14 @@ var SaveDialog = function(){
                 'image/gif': ['.gif'],
             }
         },
+        PCX:{
+            description: 'PCX Image',
+            extension: 'pcx',
+            generator: 'PCX',
+            accept: {
+                'image/x-pcx': ['.pcx'],
+            }
+        },
         JPG:{
             description: 'JPG Image',
             generator: "JPG",
@@ -201,11 +209,12 @@ var SaveDialog = function(){
                                         menu = $(".menu",
                                             $(".list",
                                                 renderButton("json","DPaint.JSON","The internal format of Dpaint. All features supported","DPAINTJS"),
-                                                renderButton("png","PNG Image","Full color and transparency, no layers, only the current frame gets saved.","PNG"),
+                                                renderButton("png","PNG Image","Full color and transparency, no layers, current frame only.","PNG"),
                                                 renderButton("psd","PSD Image","Basic layered PSD export, current frame only.","PSD"),
                                                 renderButton("gif","GIF Img/anim","Max 256 colors, no layers, animation supported.","GIF"),
-                                                renderButton("jpg","JPG Image","Full color, no transparency, no layers, only the current frame gets saved. LOSSY!","JPG"),
-                                                renderButton("iff","Amiga IFF","Maximum 256 colors, only the current frame gets saved.","IFF"),
+                                                renderButton("jpg","JPG Image","Full color, no transparency, no layers, current frame only. LOSSY!","JPG"),
+                                                renderButton("pcx","PCX Image","indexed or true color, no layers, no transparency, current frame only.","PCX"),
+                                                renderButton("iff","Amiga IFF","Maximum 256 colors, current frame only.","IFF"),
                                                 renderButton("anim","Amiga ANIM","Maximum 256 colors, animation supported.","ANIM"),
                                                 renderButton("os3","Amiga Icon","Amiga OS Icon, Maximum 2 frames.","ICO"),
                                                 renderButton("amiga","Amiga Sprite","C Source.","SPRITE"),
@@ -359,12 +368,17 @@ var SaveDialog = function(){
                             $(".content",
                                 $(".group",
                                     $("label","Compression"),
-                                    $(".options",   
+                                    $(".options",
                                         {key:"compression"},
                                         $(".option",{value:false,onClick:selectOption},"Uncompressed",$(".tooltip.left",$("div","results in larger files, but is faster to read."))),
                                         $(".option.selected",{value:true,onClick:selectOption},"Compressed",$(".tooltip.left",$("div","Uses ByteRun1 compression for the bitplane data.")))
                                     )
                                 )
+                            )
+                        ),
+                        $(".optionspanel.PCX",
+                            $(".content",
+                                UIelm.pcxInfo = $(".pcxinfo","")
                             )
                         ),
                     ),
@@ -510,6 +524,10 @@ var SaveDialog = function(){
             });
         }
 
+        if (type === "PCX" && UIelm.pcxInfo) {
+            let fmt = Generate.pcxFormat(ImageFile.getCanvas());
+            UIelm.pcxInfo.textContent = fmt.label;
+        }
     }
 
     function renderTextOutput(text){
@@ -665,6 +683,7 @@ var SaveDialog = function(){
             GIF: "GIF",
             PSD: "PSD",
             IFF: "IFF",
+            PCX: "PCX",
             classicIcon: "ICO",
             colorIcon: "ICO",
             PNGIcon: "ICO",
