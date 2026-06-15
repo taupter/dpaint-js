@@ -255,11 +255,12 @@ let Layer = function(width,height,name){
         let max = data.length>>2;
         for (let i = 0; i<max; i++){
             let index = i*4;
-            if (data[index + 3]>100){
-                imageData.data[index] = color[0];
-                imageData.data[index+1] = color[1];
-                imageData.data[index+2] = color[2];
-            }
+            //if (data[index + 3]>100){
+                data[index] = color[0];
+                data[index+1] = color[1];
+                data[index+2] = color[2];
+                data[index + 3] = 255;
+            //}
         }
         ctx.putImageData(imageData,0,0);
     }

@@ -5,6 +5,7 @@ import ImageFile from "./image.js";
 import Palette from "./ui/palette.js";
 import Modal, {DIALOG} from "./ui/modal.js";
 import Brush from "./ui/brush.js";
+import ClientApi from "./services/api.js";
 
 let App = function(){
 	let me = {
@@ -13,6 +14,7 @@ let App = function(){
 	
 	me.init = function(){
 		UI.init();
+		ClientApi.init();
 		EventBus.trigger(COMMAND.NEW);
 
 		let urlParams = new URLSearchParams(window.location.search);
